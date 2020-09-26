@@ -7,14 +7,15 @@ import { Card } from './Card'
 interface ColumnProps {
   text: string
   index: number
+  id: string
 
   /* Optional Value, React.PropsWithChildren handle it clearly
   children?: React.ReactNode
   */
 }
 
-export const Column = ({ text, index }: ColumnProps) => {
-  const { state } = useAppState()
+export const Column = ({ text, index, id }: ColumnProps) => {
+  const { state, dispatch } = useAppState()
 
   return (
     <ColumnContainer>
@@ -24,7 +25,9 @@ export const Column = ({ text, index }: ColumnProps) => {
       ))}
       <AddNewItem
         toogleButtonText="+ Add another task"
-        onAdd={console.log}
+        onAdd={(text) =>
+          dispatch({ type: 'ADD_TASK', payload: { text, listId: id } })
+        }
         dark
       />
     </ColumnContainer>

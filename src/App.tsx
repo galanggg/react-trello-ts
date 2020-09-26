@@ -6,22 +6,16 @@ import { AddNewItem } from './components/AddNewItem'
 import { useAppState } from './AppStateContext'
 
 const App = () => {
-  const { state } = useAppState()
+  const { state, dispatch } = useAppState()
   return (
     <AppContainer>
-      {/* <Column text="To Do">
-        <Card text="Generate App Scaffold"></Card>
-      </Column>
-      <Column text="In Progress">
-        <Card text="Learning TypeScript"></Card>
-      </Column>
-      <Column text="Done">
-        <Card text="Begin to use static typing"></Card>
-      </Column> */}
       {state.lists.map((list, i) => (
-        <Column text={list.text} key={list.id} index={i}></Column>
+        <Column id={list.id} text={list.text} key={list.id} index={i}></Column>
       ))}
-      <AddNewItem toogleButtonText="+ Add another todo" onAdd={console.log} />
+      <AddNewItem
+        toogleButtonText="+ Add another todo"
+        onAdd={(text) => dispatch({ type: 'ADD_LIST', payload: text })}
+      />
     </AppContainer>
   )
 }
