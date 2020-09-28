@@ -2,6 +2,7 @@ import React, { createContext, useReducer, useContext } from 'react'
 import { nanoid } from 'nanoid'
 import { findItemIndexById } from './utils/findItemIndexById'
 import { moveItem } from './MoveItem'
+import { DragItem } from './DragItem'
 
 interface Task {
   id: string
@@ -15,12 +16,8 @@ interface List {
 }
 
 export interface AppState {
+  draggedItem: DragItem | undefined
   lists: List[]
-}
-
-interface AppStateContextProps {
-  state: AppState
-  dispatch: React.Dispatch<Action>
 }
 
 /* This technique called discriminated union */
@@ -28,34 +25,15 @@ type Action =
   | { type: 'ADD_LIST'; payload: string }
   | { type: 'ADD_TASK'; payload: { text: string; listId: string } }
   | { type: 'MOVE_LIST'; payload: { dragIndex: number; hoverIndex: number } }
-
-const appData: AppState = {
-  lists: [
-    {
-      id: '0',
-      text: 'To Do',
-      tasks: [{ id: 'c0', text: 'Generate app scaffold' }],
-    },
-    {
-      id: '1',
-      text: 'In Progress',
-      tasks: [{ id: 'c2', text: 'Learn Typescript' }],
-    },
-    {
-      id: '2',
-      text: 'Done',
-      tasks: [{ id: 'c3', text: 'Begin to use static typing' }],
-    },
-  ],
+  | { type: 'SET_DRAGGED_ITEM'; payload: DragItem | undefined }
+interface AppStateContextProps {
+  state: AppState
+  dispatch: React.Dispatch<Action>
 }
 
 const AppStateContext = createContext<AppStateContextProps>(
   {} as AppStateContextProps,
 )
-
-/*Switch Case wrapped with curly brackets to define the block scope
-  if we remove the curly brackets, ts will throw the error
-*/
 const AppStateReducer = (state: AppState, action: Action): AppState => {
   switch (action.type) {
     case 'ADD_LIST': {
@@ -87,11 +65,39 @@ const AppStateReducer = (state: AppState, action: Action): AppState => {
         ...state,
       }
     }
+    case 'SET_DRAGGED_ITEM': {
+      return { ...state, draggedItem: action.payload }
+    }
     default: {
       return state
     }
   }
 }
+
+const appData: AppState = {
+  draggedItem: undefined,
+  lists: [
+    {
+      id: '0',
+      text: 'To Do',
+      tasks: [{ id: 'c0', text: 'Generate app scaffold' }],
+    },
+    {
+      id: '1',
+      text: 'In Progress',
+      tasks: [{ id: 'c2', text: 'Learn Typescript' }],
+    },
+    {
+      id: '2',
+      text: 'Done',
+      tasks: [{ id: 'c3', text: 'Begin to use static typing' }],
+    },
+  ],
+}
+
+/*Switch Case wrapped with curly brackets to define the block scope
+  if we remove the curly brackets, ts will throw the error
+*/
 
 export const useAppState = () => {
   return useContext(AppStateContext)
